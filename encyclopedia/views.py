@@ -4,10 +4,12 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
 from django.views.generic import DetailView
+from django.views.generic.edit import FormView
 from markdown_deux import markdown
 from django.urls import reverse
 
 from . import util
+from .forms import CreatePageForm
 
 
 class IndexView(TemplateView):
@@ -44,3 +46,16 @@ class SearchView(View):
         return render(request, "encyclopedia/search.html", {
             "entries": same_entries,
         })
+
+
+class CreateView(FormView):
+    template_name = 'encyclopedia/create-page.html'
+    form_class = CreatePageForm
+    
+
+    def form_valid(self, form):
+        title = form.cleaned_data["title"]
+        content = form.cleaned_data["contentMd"]
+        util.save_entry(title, content)
+        return HttpResponseRedirect(reverse("entry-page", args = [title]))
+    
