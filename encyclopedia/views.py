@@ -8,6 +8,7 @@ from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 from markdown_deux import markdown
 from django.urls import reverse
+import random
 
 from . import util
 from .forms import CreatePageForm
@@ -76,3 +77,10 @@ class EditePageView(TemplateView):
         context["form"] = form
         context["edite"] = True
         return context
+
+
+class RandomPageView(View):
+    def get(self, request):
+        entry_list = util.list_entries()
+        entry_title = random.choice(entry_list)
+        return HttpResponseRedirect(reverse("entry-page", args=[entry_title]))
